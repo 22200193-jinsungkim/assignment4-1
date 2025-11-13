@@ -3,32 +3,96 @@
 
 <head>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <style>
+        .buttondiv {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
 
+        .centerBox {
+            width: 350px;
+            margin: 20px auto;
+            padding: 15px;
+            border: 1px solid black;
+            border-radius: 6px;
+            display: none;
+            text-align: center;
+        }
+    </style>
+
+    </style>
 </head>
 
 <body>
 
 
-    ID:<input type="text" id="input_id"><br>
-    Ïù¥Î¶Ñ:<input type="name" id="input_name"><br>
-    Ïú†ÌÜµÏÇ¨:<input type="text" id="input_publisher"><br>
-    Ï†êÏú†Ïú®:<input type="text" id="input_share"><br>
 
-    <button type="button" onclick="getGame()">Îç∞Ïù¥ÌÑ∞ Î™©Î°ùÎ≥¥Í∏∞</button>
-    <button type="button" onclick="addGame()">Îç∞Ïù¥ÌÑ∞Ï∂îÍ∞Ä</button>
-    <button type="button" onclick="updateGame()">Îç∞Ïù¥ÌÑ∞ÏàòÏ†ï</button>
-    <button type="button" onclick="deleteGame()">Îç∞Ïù¥ÌÑ∞ÏÇ≠Ï†ú</button>
-    <div id="div_list">Î™©Î°ù</div>
+    <div class="buttondiv">
+        <button type="button" onclick="getGame()">µ•¿Ã≈Õ ∏Ò∑œ∫∏±‚</button>
+        <button type="button" onclick="showAdd()">µ•¿Ã≈Õ √ﬂ∞°</button>
+        <button type="button" onclick="showEdit()">µ•¿Ã≈Õ ºˆ¡§</button>
+        <input type="text" id="input_id" style="width:100px;" placeholder="Delete ID">
+        <button type="button" onclick="deleteGame()">µ•¿Ã≈ÕªË¡¶</button>
+
+    </div>
+
+    <div style="margin-top: 30px;text-align: center;" id="div_list">∏Ò∑œ</div>
+
+    <div id="addBox" class="centerBox">
+        <h3>µ•¿Ã≈Õ √ﬂ∞°</h3>
+        ID: <input type="text" id="inputadd_id"><br><br>
+        NAME: <input type="text" id="inputadd_name"><br><br>
+        ¿Ø≈ÎªÁ: <input type="text" id="inputadd_publisher"><br><br>
+        ¡°¿Ø¿≤: <input type="text" id="inputadd_share"><br><br>
+
+        <button onclick="addGame()">√ﬂ∞°«œ±‚</button>
+        <button onclick="hideBoxes()">¥›±‚</button>
+    </div>
+
+
+    <div id="editBox" class="centerBox">
+        <h3>µ•¿Ã≈Õ ºˆ¡§</h3>
+        ID: <input type="text" id="inputedit_id"><br><br>
+        NAME: <input type="text" id="inputedit_name"><br><br>
+        ¿Ø≈ÎªÁ: <input type="text" id="inputedit_publisher"><br><br>
+        ¡°¿Ø¿≤: <input type="text" id="inputedit_share"><br><br>
+
+        <button onclick="updateGame()">ºˆ¡§«œ±‚</button>
+        <button onclick="hideBoxes()">¥›±‚</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
+        function showAdd() {
+            hideBoxes();
+            $("#addBox").show();
+        }
+
+        function showEdit() {
+            hideBoxes();
+            $("#editBox").show();
+        }
+
+        function hideBoxes() {
+            $("#addBox").hide();
+            $("#editBox").hide();
+        }
+
         function getGame() {
+            $("#addBox").hide();
+            $("#editBox").hide();
             const xhr = new XMLHttpRequest();
             xhr.open("GET", "http://localhost:3000/GAME");
             xhr.setRequestHeader("content-type", "application/json");
             xhr.send();
             xhr.onload = () => {
-                if (xhr.status === 200) { //ÏÑúÎ≤ÑÏóêÏÑú Î∞õÎäî ÏÉÅÌÉúÎ≤àÌò∏Í∞Ä 200Ïù¥Î©¥ ÏÑ±Í≥µ!
-                    const res = JSON.parse(xhr.response); //ÌòïÏãù Î≥ÄÌôò json->> Î∞∞Ïó¥
-                    //alert(JSON.stringify(res));
+                if (xhr.status === 200) {
+                    const res = JSON.parse(xhr.response);
+
                     $("#div_list").html("");
                     for (let each of res) {
                         $("#div_list").append(
@@ -36,17 +100,17 @@
                         );
                     }
                 } else {
-                    console.log(xhr.status, xhr.statusText); //Ïã§Ìå®Ìï†Í≤ΩÏö∞ 
+                    console.log(xhr.status, xhr.statusText);
                 }
             }
         }
 
         function updateGame() {
             const xhr = new XMLHttpRequest();
-            let id=Number($("#input_id").val());
+            let id = Number($("#inputedit_id").val());
             xhr.open("PUT", "http://localhost:3000/GAME/" + id);
             xhr.setRequestHeader("content-type", "application/json");
-            let data = { id: $("#input_id").val(), name: $("#input_name").val(), share: $("#input_share").val(), publisher: $("#input_publisher").val(), };
+            let data = { id: $("#inputedit_id").val(), name: $("#inputedit_name").val(), share: $("#inputedit_share").val(), publisher: $("#inputedit_publisher").val(), };
             xhr.send(JSON.stringify(data));
             xhr.onload = () => {
                 if (xhr.status === 200) {
@@ -63,7 +127,7 @@
             const xhr = new XMLHttpRequest();
             xhr.open("POST", "http://localhost:3000/GAME");
             xhr.setRequestHeader("content-type", "application/json");
-            let data = { id: $("#input_id").val(), name: $("#input_name").val(), share: $("#input_share").val(), publisher: $("#input_publisher").val(), };
+            let data = { id: $("#inputadd_id").val(), name: $("#inputadd_name").val(), share: $("#inputadd_share").val(), publisher: $("#inputadd_publisher").val(), };
             xhr.send(JSON.stringify(data));
             xhr.onload = () => {
                 if (xhr.status === 200) {
@@ -77,16 +141,16 @@
         }
         function deleteGame() {
             const xhr = new XMLHttpRequest();
-            let id=Number($("#input_id").val());
+            let id = Number($("#input_id").val());
             xhr.open("DELETE", "http://localhost:3000/GAME/" + id);
             xhr.setRequestHeader("content-type", "application/json");
             xhr.send();
             xhr.onload = () => {
                 if (xhr.status === 200) {
-                    alert("ÏÇ≠Ï†ú ÏôÑÎ£å");
+                    alert("ªË¡¶ øœ∑·");
                     getGame();
                 } else {
-                    alert("ÏÇ≠Ï†ú Ïã§Ìå®:");
+                    alert("ªË¡¶ Ω«∆–");
                     console.log(xhr.status, xhr.statusText);
                 }
             };
