@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+</head>
+
+<body>
+
+
+    ID:<input type="text" id="input_id"><br>
+    이름:<input type="name" id="input_name"><br>
+    유통사:<input type="text" id="input_publisher"><br>
+    점유율:<input type="text" id="input_share"><br>
+
+    <button type="button" onclick="getGame()">데이터 목록보기</button>
+    <button type="button" onclick="addGame()">데이터추가</button>
+    <button type="button" onclick="updateGame()">데이터수정</button>
+    <button type="button" onclick="deleteGame()">데이터삭제</button>
+    <div id="div_list">목록</div>
+    <script>
+        function getGame() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:3000/GAME");
+            xhr.setRequestHeader("content-type", "application/json");
+            xhr.send();
+            xhr.onload = () => {
+                if (xhr.status === 200) { //서버에서 받는 상태번호가 200이면 성공!
+                    const res = JSON.parse(xhr.response); //형식 변환 json->> 배열
+                    //alert(JSON.stringify(res));
+                    $("#div_list").html("");
+                    for (let each of res) {
+                        $("#div_list").append(
+                            "<div>" + each["id"] + "//" + each["name"] + "//" + each["publisher"] + "//" + each["share"] + "</div>"
+                        );
+                    }
+                } else {
+                    console.log(xhr.status, xhr.statusText); //실패할경우 
+                }
+            }
+        }
+
+        function updateGame() {
+            const xhr = new XMLHttpRequest();
+            let id=Number($("#input_id").val());
+            xhr.open("PUT", "http://localhost:3000/GAME/" + id);
+            xhr.setRequestHeader("content-type", "application/json");
+            let data = { id: $("#input_id").val(), name: $("#input_name").val(), share: $("#input_share").val(), publisher: $("#input_publisher").val(), };
+            xhr.send(JSON.stringify(data));
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const res = JSON.parse(xhr.response);
+                    alert(JSON.stringify(res));
+                    getGame();
+                } else {
+                    console.log(xhr.status, xhr.statusText);
+                }
+            }
+        }
+
+        function addGame() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:3000/GAME");
+            xhr.setRequestHeader("content-type", "application/json");
+            let data = { id: $("#input_id").val(), name: $("#input_name").val(), share: $("#input_share").val(), publisher: $("#input_publisher").val(), };
+            xhr.send(JSON.stringify(data));
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const res = JSON.parse(xhr.response);
+                    alert(JSON.stringify(res));
+                    getGame();
+                } else {
+                    console.log(xhr.status, xhr.statusText);
+                }
+            }
+        }
+        function deleteGame() {
+            const xhr = new XMLHttpRequest();
+            let id=Number($("#input_id").val());
+            xhr.open("DELETE", "http://localhost:3000/GAME/" + id);
+            xhr.setRequestHeader("content-type", "application/json");
+            xhr.send();
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    alert("삭제 완료");
+                    getGame();
+                } else {
+                    alert("삭제 실패:");
+                    console.log(xhr.status, xhr.statusText);
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>
